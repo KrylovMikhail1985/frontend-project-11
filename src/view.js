@@ -1,7 +1,7 @@
 import validation from './validation.js';
 import refactor from './refactor.js';
 
-export default (currentState) => {
+export default (currentState, i18n) => {
   const state = currentState;
   const form = document.querySelector('.rss-form');
   form.addEventListener('submit', (e) => {
@@ -14,16 +14,16 @@ export default (currentState) => {
       const allUrls = Object.keys(state.urls);
       if (bool) {
         if (allUrls.includes(currentValue)) {
-          state.errors = 'RSS уже существует';
+          state.errors = 'already_exist';
         } else {
           state.urls[currentValue] = null;
           state.errors = null;
-          state.message = 'RSS успешно загружен';
+          state.message = 'succes';
         }
       } else {
-        state.errors = 'Ссылка должна быть валидным URL';
+        state.errors = 'not_valid';
       }
-      refactor(state);
+      refactor(state, i18n);
     });
   });
 };
