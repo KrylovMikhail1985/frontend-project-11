@@ -8,6 +8,10 @@ const state = {
   urls: {},
   errors: null,
   message: null,
+  topics: {},
+  fids: {},
 };
 
 view(state, i18n);
+
+// https://ru.hexlet.io/lessons.rss
