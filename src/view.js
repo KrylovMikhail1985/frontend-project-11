@@ -2,26 +2,47 @@ import onChange from 'on-change';
 import validation from './validation.js';
 import refactor from './refactor.js';
 import updateRSSData from './updateRSSData.js';
+import checkRSS from './checkRSS.js';
+import addNewTopics from './addNewTopics.js';
+import i18n from './i18n.js';
 // import { object } from 'yup';
+const state = {
+  urls: {},
+  errors: null,
+  message: null,
+  topics: {},
+  fids: {},
+};
+const watchState = onChange(state, (path, value) => {
+  // console.log('start watchState');
+  // console.log('this:', this);
+  // console.log('path:', path.slice(0, 15));
+  // console.log('value:', value);
+  // console.log(state);
+  if (path.slice(0, 4) === 'urls') {
+    updateRSSData(state, value).then((data) => {
+      state.fids = { ...state.fids, ...data.fids };
+      watchState.topics = { ...state.topics, ...data.topics };
+    });
+  }
+  if (path.slice(0, 6) === 'topics') {
+    refactor(state, i18n);
+  }
+});
 
-export default async (currentState, i18n) => {
-  const state = currentState;
-  const watchState = onChange(state, (path, value) => {
-    // console.log('start watchState');
-    // console.log('this:', this);
-    // console.log('path:', path.slice(0, 15));
-    // console.log('value:', value);
-    // console.log(state);
-    if (path.slice(0, 4) === 'urls') {
-      updateRSSData(state, value).then((data) => {
-        state.fids = { ...state.fids, ...data.fids };
-        watchState.topics = { ...state.topics, ...data.topics };
-      });
-    }
-    if (path.slice(0, 6) === 'topics') {
-      refactor(state, i18n);
+const cs = () => {
+  // console.log(checkRSS(state));
+  checkRSS(state).then((listOfNewTopics) => {
+    if (listOfNewTopics !== undefined && listOfNewTopics.length > 0) {
+      const newState = addNewTopics(state, listOfNewTopics);
+      watchState.topics = { ...newState.topics };
     }
   });
+  setTimeout(cs, 5000);
+};
+
+export default async () => {
+  // const state = currentState;
   const form = document.querySelector('.rss-form');
   form.addEventListener('submit', (e) => {
     e.preventDefault();
@@ -46,4 +67,6 @@ export default async (currentState, i18n) => {
       refactor(state, i18n);
     });
   });
+  // reloading by timing;
+  cs();
 };

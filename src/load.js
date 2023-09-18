@@ -1,7 +1,7 @@
 const domParser = new DOMParser();
 
 export default async (url, maxI, numberNewFid) => {
-  const rrr = fetch(`https://allorigins.hexlet.app/get?url=${encodeURIComponent(url)}`)
+  const rrr = fetch(`https://allorigins.hexlet.app/get?disableCache=true&url=${encodeURIComponent(url)}`)
     .then((response) => {
       if (response.ok) return response.json();
       throw new Error('Network response with url: was not ok.');
@@ -11,7 +11,7 @@ export default async (url, maxI, numberNewFid) => {
         fids: {},
         topics: {},
       };
-      let i = maxI;
+      // let i = maxI;
       const dom = domParser.parseFromString(data.contents, 'application/xhtml+xml');
       const fidTitle = dom.querySelector('channel > title');
       const fidDescription = dom.querySelector('channel > description');
@@ -22,8 +22,8 @@ export default async (url, maxI, numberNewFid) => {
         };
       }
       const items = dom.querySelectorAll('item');
+      let i = maxI + items.length;
       items.forEach((item) => {
-        i += 1;
         const title = item.querySelector('title').textContent;
         const link = item.querySelector('link').textContent;
         const description = item.querySelector('description').textContent;
@@ -32,6 +32,7 @@ export default async (url, maxI, numberNewFid) => {
           link,
           description,
         };
+        i -= 1;
       });
       return result;
     });
