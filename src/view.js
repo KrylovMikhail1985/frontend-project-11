@@ -37,7 +37,9 @@ const watchState = onChange(state, (path, value) => {
 const cs = () => {
   // console.log(checkRSS(state));
   checkRSS(state).then((listOfNewTopics) => {
-    if (listOfNewTopics !== undefined && listOfNewTopics.length > 0) {
+    if (_.isEqual(listOfNewTopics, 'net_error')) {
+      console.log('my net error');
+    } else if (listOfNewTopics !== undefined && listOfNewTopics.length > 0) {
       const newState = addNewTopics(state, listOfNewTopics);
       watchState.topics = { ...newState.topics };
     }

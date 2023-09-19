@@ -17,5 +17,9 @@ export default async (currenrState, newUrl) => {
       state.errors = 'no_RSS';
     }
     return state;
+  }).catch((e) => {
+    console.log(e);
+    state.errors = 'net_error';
+    return state;
   });
 };

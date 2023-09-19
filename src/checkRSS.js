@@ -25,7 +25,7 @@ export default async (currentState) => {
         });
       });
       return listOfTopics;
-    });
+    }).catch(() => 'net_error');
   }
   return undefined;
 };
