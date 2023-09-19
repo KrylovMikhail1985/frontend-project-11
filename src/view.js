@@ -1,3 +1,4 @@
+import _ from 'lodash';
 import onChange from 'on-change';
 import validation from './validation.js';
 import refactor from './refactor.js';
@@ -50,22 +51,26 @@ export default async () => {
     const input = form.querySelector('#url-input');
     const currentValue = input.value;
     // input.value = `Value = ${currentValue}`;
-    validation(currentValue).then((bool) => {
-      const allUrls = Object.values(state.urls);
-      if (bool) {
-        if (allUrls.includes(currentValue)) {
-          state.errors = 'already_exist';
+    if (_.isEqual(currentValue, '')) {
+      state.errors = 'empty';
+    } else {
+      validation(currentValue).then((bool) => {
+        const allUrls = Object.values(state.urls);
+        if (bool) {
+          if (allUrls.includes(currentValue)) {
+            state.errors = 'already_exist';
+          } else {
+            state.errors = null;
+            state.message = 'succes';
+            const urlId = Object.keys(state.urls).length + 1;
+            watchState.urls[urlId] = currentValue;
+          }
         } else {
-          state.errors = null;
-          state.message = 'succes';
-          const urlId = Object.keys(state.urls).length + 1;
-          watchState.urls[urlId] = currentValue;
+          state.errors = 'not_valid';
         }
-      } else {
-        state.errors = 'not_valid';
-      }
-      refactor(state, i18n);
-    });
+        refactor(state, i18n);
+      });
+    }
   });
   // reloading by timing;
   cs();
