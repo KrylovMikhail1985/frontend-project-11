@@ -13,6 +13,8 @@ export default async (currenrState, newUrl) => {
     if (Object.keys(data.topics).length > 0) {
       state.fids = { ...state.fids, ...data.fids };
       state.topics = { ...state.topics, ...data.topics };
+    } else {
+      state.errors = 'no_RSS';
     }
     return state;
   });

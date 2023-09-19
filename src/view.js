@@ -22,6 +22,9 @@ const watchState = onChange(state, (path, value) => {
   // console.log(state);
   if (path.slice(0, 4) === 'urls') {
     updateRSSData(state, value).then((data) => {
+      if (!_.isEqual(data.errors, state.errors)) {
+        watchState.errors = data.errors;
+      }
       state.fids = { ...state.fids, ...data.fids };
       watchState.topics = { ...state.topics, ...data.topics };
     });
